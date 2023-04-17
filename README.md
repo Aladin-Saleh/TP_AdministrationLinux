@@ -298,3 +298,106 @@ chercher le ldap, le parefeu
 ```
 
 Ne pas oublier de faire des snapshot des VM.  
+
+
+# INSTALLATION LDAP
+
+Suivre le tuto https://ubuntu.com/server/docs/service-ldap  
+```
+
+sudo apt install slapd ldap-utils
+
+sudo dpkg-reconfigure slapd
+
+Renseigner le DNS domain name format [prefixe.suffixe]
+ 
+Poursuivre jusqu'à la fin sans rien changer
+
+ldapsearch -x -LLL -H -ldap:/// -b dc=[prefixe],dc=[suffixe] dn
+
+Retour devrait être dn : cn=admin, dc=[prefixe],dc=[suffixe]
+```
+
+
+Utiliser Apache Directory Studio (nécesite le JRE de Java)
+
+Créer un nouveau connecteur :
+
+- Renseigner un nom
+- Renseigner l'ip du serveur LDAP 
+- Next puis renseigner le Bind dn = cn=admin, dc=[prefixe],dc=[suffixe]
+- Suivant puis Finir
+
+Arborescence sur la gauche avec l'admin
+
+Utiliser notepad/bloc-note pour peupler le ldap et créer les utilisateurs
+
+Template à utiliser :
+
+//Unité organisationnelle
+dn: ou=Groups,dc=example,dc=com
+objectClass: organizationalUnit
+ou: Groups
+
+//Groupe
+dn: cn=miners,ou=Groups,dc=example,dc=com
+objectClass: posixGroup
+cn: miners
+gidNumber: 5000
+
+
+nano base.ldif -> coller les utilisateurs et les groupes à créer
+
+ldapadd -x -D cn=admin,dc=[prefixe],dc=[suffixe] -W -f base.ldif
+
+Utiliser A.P.S pour vérifier que tout à été créer
+
+Suivre le tuto https://ubuntu.com/server/docs/service-ldap-usage
+```
+
+sudo apt install ldapscripts
+
+sudo cp /etc/ldapscripts/ldapscripts.conf ldapscripts.conf.bak
+
+sudo nano /etc/ldapscripts/ldapscripts.conf
+```
+
+Décommenter la ligne "SERVER=ldap://[adresse-du-serveur-ldap]"
+
+Changer les "dc" de la ligne SUFFIX  pour correspondre à la config
+```
+
+BINDDN="cn=admin,dc=[prefixe],dc=[suffixe]"
+
+USHELL="/bin/bash"
+
+UHOMES="/exports/home/%u"
+
+CREATEHOMES="yes"
+
+Sauvegarder et quitter
+
+sudo mkdir -p /exports/home
+
+sudo nano /etc/ldapscripts/ldapscripts.passwd
+```
+
+## Supprimer le texte par défaut
+
+```
+sudo chmod 400 /etc/ldapscripts/ldapscripts.passwd
+
+sudo sh -c "echo -n '[mdp]' > /etc/ldapscripts/ldapscripts.passwd"
+
+sudo ldapaddgroup [group]
+
+sudo ldapadduser [user] [group]
+
+sudo ldapdeleteuser [user]
+
+sudo ldapdeletegroup [group]
+
+sudo ldapsetpasswd [user] -> taper le mdp
+```
+
+
