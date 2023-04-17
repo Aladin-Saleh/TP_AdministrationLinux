@@ -1,7 +1,8 @@
 # TP_AdministrationLinux
 TP d'Administration linux de l'ESIEE Amiens
 
-![image](https://user-images.githubusercontent.com/67257097/232489035-d3e42d53-ad11-478c-aa99-53120f3cf7ea.png)
+![image](https://user-images.githubusercontent.com/67257097/232501406-0cf49ab5-c508-4a97-9999-981245f2ba31.png)
+
 
 
 # Création d'un pare-feu (pfsense)
@@ -86,4 +87,70 @@ Reloads
 Accept
 ```
 
+# Mise en place du serveur DHCP
 
+Cloner le template Ubuntu Server 20.04.
+```
+Click droit -> Cloner 
+L'appeler IPAM (IP Adresse Manager)
+Lancer la machine
+Utiliser Putty pour se connecter en ssh
+Entrer les logs (celui du template)
+```
+## Configuration du netplan
+
+```
+sudo nano /etc/netplan/00-installer-config.yml
+mise à jour de l'@ par celle du plan (10.9.1.253)
+quitter
+sudo netplanapply
+```
+
+Normalement on se fait kick de putty car modification de l'@
+Se reconnecter avec la nouvelle adresse.  
+
+## Changement du nom de la machine 
+
+```
+sudo hostnamectl set-hostname ipam
+```
+Verifier que la modification à été pris en compte en ouvrant une nouvelle session.  
+
+## Installation du service DHCP
+
+Se rendre sur le guide ubuntu d'installation : https://ubuntu.com/server/docs/network-dhcp
+
+```
+sudo apt install isc-dhcp-server
+sudo nano /etc/dhcp/dhcpd.conf
+
+Remplacer 10.5.5 par 10.9.1
+Remplacer le masque pour 255.255.255.224 par 255.255.255.0
+Mettre l'@ du serveur DNS pour le domain-name-server par l'@du serveur DNS
+Le domain-name à mettre à jour 
+option routers <adresses parefeu>
+
+```
+Sauvegarder et quitter
+
+## Modification des interfaces d'écoutes
+
+```
+Check l'interface à mettre à jour
+
+ip -br a 
+sudo nano /etc/default/isc-dhcp-server
+On met le nom de notre interface dans "INTERFACESv4"
+sudo systemctl restart isc-dhcp-server.service
+```
+
+On peut vérifier la fonctionnalité du serveur DHCP en créant une machine 
+## Création du clone de test
+
+```
+Settings -> System -> Tout desactiver sauf network
+            Network -> Host-Only Adapter
+```
+            
+Lancer la machine -> Ne pas charger d'image.
+Verifier que l'@ a bien été attribué.
