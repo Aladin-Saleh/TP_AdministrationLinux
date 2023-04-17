@@ -400,4 +400,6 @@ sudo ldapdeletegroup [group]
 sudo ldapsetpasswd [user] -> taper le mdp
 ```
 
+# INSTALLATION NFS
 
+https://ubuntu.com/server/docs/service-nfs
