@@ -86,6 +86,98 @@ Configuration des logs
 Reloads
 Accept
 ```
+# TEMPLATE UBUNTU 20.04 SERVER
+
+Sert à être cloner pour tous les services à installer  
+
+Créer une nouvelle machine vituelle :
+```
+- Renseigner la date
+- La version d'ubuntu
+- Ubuntu 64 Bit
+- 1024 ou 2048 Mo de RAM
+- Create virtual hard disk now
+- VDI Dynamic
+- 25 GB stockage
+```
+
+Settings :
+```
+- 4 processors
+- Sélectionner le fichier .iso
+- Réseau Adaptater 1 en réseau privé hôte (Host Only)
+```
+
+Démarrer la machine  
+
+Sélectionner l'iso  
+
+Choisir la langue français avec clavier AZERTY  
+
+Configurer l'enp0s3 avec l'adresse statique du serveur DHCP  
+
+Passerelle par défaut = Parefeu
+
+Mettre un serveur DNS par défaut (1.1.1.1)
+
+Pas de proxy / pas de changement au mirroir
+
+Continuer sans mettre à jour
+
+Suivant jusqu'au profil
+
+Appeler la machine template
+
+Renseigner un nom d'utilisateur sans espace
+
+Renseigner un mdp et s'en souvenir pour la suite du TP  
+
+
+# Installer Open SSH
+
+Pas de service supplémentaire
+
+Lancer l'installation
+
+Redémarer
+
+Et éjecter le CD
+
+Se loguer
+
+Se connecter en SSH sur le template
+
+sudo apt update & sudo apt upgrade
+
+Arrêter la VM
+
+Faire un snapshot de la VM
+
+Ensuite faire un clic droit sur la VM et cliquer sur cloner
+
+Renseigner le nom de la nouvelle machine
+
+Cliquer sur suivant jusq'à la fin du wizard
+
+Démarer le clone
+
+Changer l'adresse IP et le nom :
+
+sudo nano /etc/netplan/00-installer-config.yaml
+
+(Attention pas de tabulation que des espaces)
+
+Changer l'ip enp0s3->adresses
+
+Sauvegarder
+
+sudo netplan apply (perte de connectivité normale)
+
+sudo hostnamectl set-hostname [nom-de-la-machine]
+
+redémarer la session ou la VM directement
+
+
 
 # Mise en place du serveur DHCP
 
