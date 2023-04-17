@@ -152,5 +152,57 @@ Settings -> System -> Tout desactiver sauf network
             Network -> Host-Only Adapter
 ```
             
-Lancer la machine -> Ne pas charger d'image.
+Lancer la machine -> Ne pas charger d'image.  
 Verifier que l'@ a bien été attribué.
+
+# Mise en place du serveur DNS
+
+Faire une sauvegarde de la VM DHCP.  
+Se rendre sur : https://ubuntu.com/server/docs/service-domain-name-service-dns  
+
+```
+sudo apt install bind9
+sudo apt install dnsutils
+```
+
+## Configuration du service DNS
+
+```
+sudo nano /etc/bind/named.conf.local
+Ajouter : 
+zone "grp09.lab" {
+    type master;
+    file "/etc/bind/db.grp09.lab";
+};
+```
+Enregistrer et quitter.  
+
+## Creation du db.grp09.lab
+
+```
+cd /etc/bind/
+sudo cp db.local db.grp09.lab
+```
+
+On edite db.grp09.lab.  
+Consiste à remplacer localhost par grp09.lab  
+Remplacer l'@ IPv4 (A) par celle du serveur DHCP
+```
+ns IN A @DHCP
+ldap IN A @LDAP
+parefeu IN A @PAREFEU
+```
+
+```
+sudo systemctl restart bind9.service
+```
+
+## Verification du fonctionnement du serveur DNS
+
+```
+nslookup
+server @DNS
+chercher le ldap, le parefeu
+```
+
+Ne pas oublier de faire des snapshot des VM.  
